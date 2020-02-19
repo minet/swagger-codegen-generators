@@ -157,16 +157,31 @@ export class {{classname}} {
         let queryParameters = new URLSearchParams('', new CustomQueryEncoderHelper());
         {{/useHttpClient}}
 {{#queryParams}}
-        {{#isListContainer}}
-        if ({{paramName}}) {
         {{#isCollectionFormatMulti}}
-            {{paramName}}.forEach((element) => {
-                {{#useHttpClient}}queryParameters = {{/useHttpClient}}queryParameters.append('{{baseName}}', <any>element);
-            })
+        if ({{paramName}}) {
+            for (const key in {{paramName}}) {
+                if (Object.prototype.hasOwnProperty.call({{paramName}}, key)) {
+                  const value = {{paramName}}[key];
+                  queryParameters = queryParameters.append(key, <any>value);
+                }
+            }
+        }
         {{/isCollectionFormatMulti}}
         {{^isCollectionFormatMulti}}
+        {{#isCollectionFormatDeepObject}}
+        if ({{paramName}}) {
+            for (const key in {{paramName}}) {
+                if (Object.prototype.hasOwnProperty.call({{paramName}}, key)) {
+                  const value = {{paramName}}[key];
+                  queryParameters = queryParameters.append('{{paramName}}[' + key + ']', <any>value);
+                }
+            }
+        }
+        {{/isCollectionFormatDeepObject}}
+        {{^isCollectionFormatDeepObject}}
+        {{#isListContainer}}
+        if ({{paramName}}) {  
             {{#useHttpClient}}queryParameters = {{/useHttpClient}}queryParameters.set('{{baseName}}', {{paramName}}.join(COLLECTION_FORMATS['{{collectionFormat}}']));
-        {{/isCollectionFormatMulti}}
         }
         {{/isListContainer}}
         {{^isListContainer}}
@@ -179,6 +194,8 @@ export class {{classname}} {
         {{/isDateTime}}
         }
         {{/isListContainer}}
+        {{/isCollectionFormatDeepObject}}
+        {{/isCollectionFormatMulti}}
 {{/queryParams}}
 
 {{/hasQueryParams}}
