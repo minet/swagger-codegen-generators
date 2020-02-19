@@ -2419,6 +2419,8 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
             } else if (parameterSchema instanceof FileSchema || parameterSchema instanceof BinarySchema) {
                 codegenParameter.getVendorExtensions().put(CodegenConstants.IS_BINARY_EXT_NAME, Boolean.TRUE);
                 codegenParameter.getVendorExtensions().put(CodegenConstants.IS_FILE_EXT_NAME, Boolean.TRUE);
+            } else if (parameterSchema instanceof ObjectSchema) {
+                collectionFormat = getCollectionFormat(parameter);
             }
 
             if (parameterSchema == null) {
@@ -2455,6 +2457,8 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
             codegenParameter.collectionFormat = collectionFormat;
             if(collectionFormat != null && collectionFormat.equals("multi")) {
                 codegenParameter.getVendorExtensions().put(CodegenConstants.IS_COLLECTION_FORMAT_MULTI_EXT_NAME, Boolean.TRUE);
+            } else if(collectionFormat != null && collectionFormat.equals("deepObject")) {
+                codegenParameter.getVendorExtensions().put(CodegenConstants.IS_COLLECTION_FORMAT_DEEP_OBJECT_EXT_NAME, Boolean.TRUE);
             }
             codegenParameter.paramName = toParamName(parameter.getName());
 
@@ -4126,8 +4130,10 @@ public abstract class DefaultCodegenConfig implements CodegenConfig {
 
     // See: https://swagger.io/docs/specification/serialization/#query
     protected String getCollectionFormat(Parameter parameter) {
-        // "explode: true" is the default and always results in "multi", no matter the style.
         if (parameter.getExplode() == null || parameter.getExplode()) {
+            if (Parameter.StyleEnum.DEEPOBJECT.equals(parameter.getStyle())) {
+                return "deepObject";
+            }
             return "multi";
         }
 
