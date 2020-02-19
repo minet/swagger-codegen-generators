@@ -593,7 +593,7 @@ public class JavaModelTest extends AbstractCodegenTest {
                 .name("limit")
                 .required(true);
         final DefaultCodegenConfig codegen = new JavaClientCodegen();
-        final CodegenParameter cm = codegen.fromParameter(parameter, null);
+        final CodegenParameter cm = codegen.fromParameter(parameter, null, null);
 
         Assert.assertNull(cm.allowableValues);
     }
