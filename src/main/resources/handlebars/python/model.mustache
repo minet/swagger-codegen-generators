@@ -7,6 +7,8 @@ import re  # noqa: F401
 
 import six
 
+from src.entity.decorator.entity_property import entity_property
+
 {{#models}}
 {{#model}}
 {{#parent}}
@@ -90,7 +92,7 @@ class {{classname}}(object):
 {{/vars}}
 
 {{#vars}}
-    @property
+    @entity_property
     def {{name}}(self):
         """Gets the {{name}} of this {{classname}}.  # noqa: E501
 
